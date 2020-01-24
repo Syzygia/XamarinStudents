@@ -1,4 +1,5 @@
-﻿using Plugin.Share;
+﻿using App2.Components;
+using Plugin.Share;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,61 +19,113 @@ namespace App2
     {
         public int counterLeft = 0, counterRight = 0;
 
-        public void add(string text, bool right_)
+        public void add(string text, bool right_, string path)
         {
-            Frame frame = new Frame
+            int size = (text.Length >= 10) ? 10 : text.Length;
+            Note frame = new Note
             {
-                BorderColor = Color.Aqua
+                BorderColor = Color.Aqua,
+                InnerText = text,
+                Path = path
             };
             Label label = new Label();
-            label.Text = text;
+            label.Text = text.Substring(0, size);
             label.BackgroundColor = Color.Beige;
+            label.LineBreakMode = LineBreakMode.WordWrap;
             frame.Content = label;
             var tapGestureRecognizer = new TapGestureRecognizer();
             tapGestureRecognizer.Tapped += (tapsender, tape) =>
             {
-                EditorPage editor2 = new EditorPage(label.Text);
+                EditorPage editor2 = new EditorPage(frame.InnerText);
                 editor2.Disappearing += (a, b) =>
                 {
-                    label.Text = editor2.text;
+                    frame.InnerText = editor2.text;
+                    label.Text = editor2.text.Substring(0,10);
                 };
                 Navigation.PushAsync(editor2);
             };
             label.GestureRecognizers.Add(tapGestureRecognizer);
             var pan = new PanGestureRecognizer();
-
-            if (right_)
-            {
-                double totalX = 0;
-                pan.PanUpdated += async (panSender, panArgs) =>
+            double totalX = 0;
+            pan.PanUpdated += async (panSender, panArgs) =>
+            {                
+                switch (panArgs.StatusType)
                 {
-                    switch (panArgs.StatusType)
-                    {
-                        case GestureStatus.Canceled:
-                        case GestureStatus.Started:
-                            frame.TranslationX = 0;
-                            break;
-                        case GestureStatus.Completed:
-                            if (totalX > 0)
+                    case GestureStatus.Canceled:
+                    case GestureStatus.Started:
+                        frame.TranslationX = 0;
+                        break;
+                    case GestureStatus.Completed:
+                        if ((right_ && totalX > 0) || (!right_ && totalX < 0))
+                        {
+                            if (await DisplayAlert("Confirm the deleting", "Are you sure?", "Yes!", "No"))
                             {
-                                if (await DisplayAlert("Confirm the deleting", "Are you sure?", "Yes!", "No"))
+                                File.Delete((panSender as Note).Path);
+                                if (right_)
                                 {
-                                    right.Children.Remove(panSender as Frame);
+                                    right.Children.Remove(panSender as Note);
+                                } 
+                                else
+                                {
+                                    left.Children.Remove(panSender as Note);
                                 }
-                                totalX = 0;
                             }
-                            frame.TranslationX = 0;
-                            break;
-                        case GestureStatus.Running:
-                            if (panArgs.TotalX > 0)
+                            totalX = 0;
+                        }
+                        frame.TranslationX = 0;
+                        break;
+                    case GestureStatus.Running:
+                        if ((right_ &&  panArgs.TotalX > 0) || (!right_ && panArgs.TotalX < 0))
+                        {
+                            frame.TranslationX = panArgs.TotalX;
+                            totalX = panArgs.TotalX;
+                        }
+                        break;
+                }
+            };
+            frame.GestureRecognizers.Add(pan);
+
+            var label_pan = new PanGestureRecognizer();
+            double totalX_ = 0;
+            label_pan.PanUpdated += async (panSender, panArgs) =>
+            {
+                switch (panArgs.StatusType)
+                {
+                    case GestureStatus.Canceled:
+                    case GestureStatus.Started:
+                        frame.TranslationX = 0;
+                        break;
+                    case GestureStatus.Completed:
+                        if ((right_ && totalX_ > 0) || (!right_ && totalX_ < 0))
+                        {
+                            if (await DisplayAlert("Confirm the deleting", "Are you sure?", "Yes!", "No"))
                             {
-                                frame.TranslationX = panArgs.TotalX;
-                                totalX = panArgs.TotalX;
+                                File.Delete((((panSender as Label).Parent) as Note).Path);
+                                if (right_)
+                                {
+                                    right.Children.Remove(((panSender as Label).Parent) as Note);
+                                }
+                                else
+                                {
+                                    left.Children.Remove(((panSender as Label).Parent) as Note);
+                                }
                             }
-                            break;
-                    }
-                };
-                frame.GestureRecognizers.Add(pan);
+                            totalX = 0;
+                        }
+                        frame.TranslationX = 0;
+                        break;
+                    case GestureStatus.Running:
+                        if ((right_ && panArgs.TotalX > 0) || (!right_ && panArgs.TotalX < 0))
+                        {
+                            frame.TranslationX = panArgs.TotalX;
+                            totalX_ = panArgs.TotalX;
+                        }
+                        break;
+                }
+            };
+            label.GestureRecognizers.Add(label_pan);
+            if (right_)
+            {             
                 right.Children.Add(frame);
             }
             else
@@ -89,9 +142,9 @@ namespace App2
             while (File.Exists(newFile))
             {
                 string text = File.ReadAllText(newFile);
-                add(text, false);
                 newName = ++counterLeft + "Left.txt";
                 newFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), newName);
+                add(text, false, newFile);
             }
             //counterLeft = Math.Max(0, counterLeft - 1);
 
@@ -101,9 +154,10 @@ namespace App2
             while (File.Exists(newFile))
             {
                 string text = File.ReadAllText(newFile);
-                add(text, true);
                 newName = ++counterRight + "Right.txt";
                 newFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), newName);
+                add(text, true, newFile);
+
             }
             //counterRight = Math.Max(0, counterRight - 1);
         }
@@ -124,59 +178,23 @@ namespace App2
         {
             EditorPage editor = new EditorPage();
             editor.Disappearing += (s, _e) => {
-                if (editor.text == null) return;
-                Frame frame = new Frame
-                {
-                    BorderColor = Color.Aqua
-                };
-                Label label = new Label();
-                label.Text = editor.text;  
-                label.BackgroundColor = Color.Beige;
-                frame.Content = label;
-                var tapGestureRecognizer = new TapGestureRecognizer();
-                tapGestureRecognizer.Tapped += (tapsender, tape) =>
-                {
-                    EditorPage editor2 = new EditorPage(label.Text);
-                    editor2.Disappearing += (a, b) =>
-                    {
-                        label.Text = editor2.text;
-                    };
-                    Navigation.PushAsync(editor2);
-                };
-                label.GestureRecognizers.Add(tapGestureRecognizer);
-                var swipe = new SwipeGestureRecognizer();
-
+               
                 string newName;
+                string newFile;
                 if (left.Height > right.Height)
                 {
-                    swipe.Direction = SwipeDirection.Right; 
-                    swipe.Swiped += (swipeSender, swipeEventArg) =>
-                    {
-                        right.Children.Remove(swipeSender as Frame);
-                    };
-                    frame.GestureRecognizers.Add(swipe);
-                    right.Children.Add(frame);
-
-                    newName = counterRight++ + "Right.txt";
+                    newName = counterLeft++ + "Right.txt";
+                    newFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), newName);
+                    add(editor.text, true, newFile);
                 }
                 else
                 {
-                    swipe.Direction = SwipeDirection.Left;
-                    swipe.Swiped += async (swipeSender, swipeEventArg) =>
-                    {
-                        if (await DisplayAlert("Confirm the deleting", "Are you sure?", "Yes!", "No"))
-                        {
-                            left.Children.Remove(frame);
-                        }
-                    };
-                    frame.GestureRecognizers.Add(swipe);
-                    left.Children.Add(frame);
-
                     newName = counterLeft++ + "Left.txt";
+                    newFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), newName);
+                    add(editor.text, false, newFile);
                 }
 
-                string newFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), newName);
-                File.WriteAllText(newFile, label.Text);
+                File.WriteAllText(newFile, editor.text);
             };
             Navigation.PushAsync(editor);
         }

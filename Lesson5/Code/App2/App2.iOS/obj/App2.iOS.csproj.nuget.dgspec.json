@@ -1,24 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\pavle\\Documents\\GitHub\\XamarinStudents\\Lesson5\\Code\\App2\\App2.iOS\\App2.iOS.csproj": {}
+    "C:\\Users\\Danila\\Desktop\\Mobile-Real\\XamarinStudents\\Lesson5\\Code\\App2\\App2.iOS\\App2.iOS.csproj": {}
   },
   "projects": {
-    "C:\\Users\\pavle\\Documents\\GitHub\\XamarinStudents\\Lesson5\\Code\\App2\\App2.iOS\\App2.iOS.csproj": {
+    "C:\\Users\\Danila\\Desktop\\Mobile-Real\\XamarinStudents\\Lesson5\\Code\\App2\\App2.iOS\\App2.iOS.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\pavle\\Documents\\GitHub\\XamarinStudents\\Lesson5\\Code\\App2\\App2.iOS\\App2.iOS.csproj",
+        "projectUniqueName": "C:\\Users\\Danila\\Desktop\\Mobile-Real\\XamarinStudents\\Lesson5\\Code\\App2\\App2.iOS\\App2.iOS.csproj",
         "projectName": "App2.iOS",
-        "projectPath": "C:\\Users\\pavle\\Documents\\GitHub\\XamarinStudents\\Lesson5\\Code\\App2\\App2.iOS\\App2.iOS.csproj",
-        "packagesPath": "C:\\Users\\pavle\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\pavle\\Documents\\GitHub\\XamarinStudents\\Lesson5\\Code\\App2\\App2.iOS\\obj\\",
+        "projectPath": "C:\\Users\\Danila\\Desktop\\Mobile-Real\\XamarinStudents\\Lesson5\\Code\\App2\\App2.iOS\\App2.iOS.csproj",
+        "packagesPath": "C:\\Users\\Danila\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Danila\\Desktop\\Mobile-Real\\XamarinStudents\\Lesson5\\Code\\App2\\App2.iOS\\obj\\",
         "projectStyle": "PackageReference",
         "skipContentFileWrite": true,
         "fallbackFolders": [
           "C:\\Microsoft\\Xamarin\\NuGet\\"
         ],
         "configFilePaths": [
-          "C:\\Users\\pavle\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Danila\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
@@ -32,8 +32,8 @@
         "frameworks": {
           "xamarinios10": {
             "projectReferences": {
-              "C:\\Users\\pavle\\Documents\\GitHub\\XamarinStudents\\Lesson5\\Code\\App2\\App2\\App2.csproj": {
-                "projectPath": "C:\\Users\\pavle\\Documents\\GitHub\\XamarinStudents\\Lesson5\\Code\\App2\\App2\\App2.csproj"
+              "C:\\Users\\Danila\\Desktop\\Mobile-Real\\XamarinStudents\\Lesson5\\Code\\App2\\App2\\App2.csproj": {
+                "projectPath": "C:\\Users\\Danila\\Desktop\\Mobile-Real\\XamarinStudents\\Lesson5\\Code\\App2\\App2\\App2.csproj"
               }
             }
           }
@@ -65,21 +65,20 @@
         }
       }
     },
-    "C:\\Users\\pavle\\Documents\\GitHub\\XamarinStudents\\Lesson5\\Code\\App2\\App2\\App2.csproj": {
+    "C:\\Users\\Danila\\Desktop\\Mobile-Real\\XamarinStudents\\Lesson5\\Code\\App2\\App2\\App2.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\pavle\\Documents\\GitHub\\XamarinStudents\\Lesson5\\Code\\App2\\App2\\App2.csproj",
+        "projectUniqueName": "C:\\Users\\Danila\\Desktop\\Mobile-Real\\XamarinStudents\\Lesson5\\Code\\App2\\App2\\App2.csproj",
         "projectName": "App2",
-        "projectPath": "C:\\Users\\pavle\\Documents\\GitHub\\XamarinStudents\\Lesson5\\Code\\App2\\App2\\App2.csproj",
-        "packagesPath": "C:\\Users\\pavle\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\pavle\\Documents\\GitHub\\XamarinStudents\\Lesson5\\Code\\App2\\App2\\obj\\",
+        "projectPath": "C:\\Users\\Danila\\Desktop\\Mobile-Real\\XamarinStudents\\Lesson5\\Code\\App2\\App2\\App2.csproj",
+        "packagesPath": "C:\\Users\\Danila\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Danila\\Desktop\\Mobile-Real\\XamarinStudents\\Lesson5\\Code\\App2\\App2\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet\\",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "C:\\Microsoft\\Xamarin\\NuGet\\"
         ],
         "configFilePaths": [
-          "C:\\Users\\pavle\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Danila\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
