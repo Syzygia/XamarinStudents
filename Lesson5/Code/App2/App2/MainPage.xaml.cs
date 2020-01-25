@@ -75,11 +75,18 @@ namespace App2
                 Path = path,               
                 Right = right_
             };
+            StackLayout box = new StackLayout();          
             Label label = new Label();
             label.Text = text.Substring(0, size);
             label.BackgroundColor = Color.Beige;
             label.LineBreakMode = LineBreakMode.WordWrap;
-            frame.Content = label;
+            Label label1 = new Label
+            {
+                Text = File.GetCreationTime(path).ToString()
+            };
+            box.Children.Add(label);
+            box.Children.Add(label1);
+            frame.Content = box;
             var tapGestureRecognizer = new TapGestureRecognizer();
             tapGestureRecognizer.Tapped += (tapsender, tape) =>
             {
@@ -88,10 +95,16 @@ namespace App2
                 {
                     frame.InnerText = editor2.text;
                     label.Text = editor2.text.Substring(0,10);
+                    File.WriteAllText(frame.Path, editor2.text);
+                    label1.Text = File.GetLastWriteTime(path).ToString();
+
                 };
                 Navigation.PushAsync(editor2);
             };
             label.GestureRecognizers.Add(tapGestureRecognizer);
+            box.GestureRecognizers.Add(tapGestureRecognizer);
+            label1.GestureRecognizers.Add(tapGestureRecognizer);
+            frame.GestureRecognizers.Add(tapGestureRecognizer);
             var pan = new PanGestureRecognizer();
             double totalX = 0;
             pan.PanUpdated += async (panSender, panArgs) =>
@@ -116,9 +129,9 @@ namespace App2
                                 {
                                     left.Children.Remove(panSender as Note);
                                 }
+                                Balance();
                             }
                             totalX = 0;
-                            Balance();
                         }
                         frame.TranslationX = 0;
                         break;
@@ -144,37 +157,38 @@ namespace App2
                         frame.TranslationX = 0;
                         break;
                     case GestureStatus.Completed:
-                        if (((((panSender as Label).Parent) as Note).Right && totalX_ > 0) ||
-                            (!(((panSender as Label).Parent) as Note).Right && totalX_ < 0))
+                        if (((((panSender as Label).Parent).Parent as Note).Right && totalX_ > 0) ||
+                            (!(((panSender as Label).Parent).Parent as Note).Right && totalX_ < 0))
                         {
                             if (await DisplayAlert("Confirm the deleting", "Are you sure?", "Yes!", "No"))
                             {
-                                File.Delete((((panSender as Label).Parent) as Note).Path);
-                                if ((((panSender as Label).Parent) as Note).Right)
+                                File.Delete((((panSender as Label).Parent).Parent as Note).Path);
+                                if ((((panSender as Label).Parent).Parent as Note).Right)
                                 {
-                                    right.Children.Remove(((panSender as Label).Parent) as Note);
+                                    right.Children.Remove(((panSender as Label).Parent).Parent as Note);
                                 }
                                 else
                                 {
-                                    left.Children.Remove(((panSender as Label).Parent) as Note);
+                                    left.Children.Remove(((panSender as Label).Parent).Parent as Note);
                                 }
+                                Balance();
                             }
                             totalX_ = 0;
-                            Balance();
                         }
-                        (((panSender as Label).Parent) as Note).TranslationX = 0;
+                        (((panSender as Label).Parent).Parent as Note).TranslationX = 0;
                         break;
                     case GestureStatus.Running:
-                        if (((((panSender as Label).Parent) as Note).Right && panArgs.TotalX > 0) ||
-                            (!(((panSender as Label).Parent) as Note).Right && panArgs.TotalX < 0))
+                        if (((((panSender as Label).Parent).Parent as Note).Right && panArgs.TotalX > 0) ||
+                            (!(((panSender as Label).Parent).Parent as Note).Right && panArgs.TotalX < 0))
                         {
-                            (((panSender as Label).Parent) as Note).TranslationX = panArgs.TotalX;
+                            (((panSender as Label).Parent).Parent as Note).TranslationX = panArgs.TotalX;
                             totalX_ = panArgs.TotalX;
                         }
                         break;
                 }
             };
             label.GestureRecognizers.Add(label_pan);
+            label1.GestureRecognizers.Add(label_pan);
             if (right_)
             {             
                 right.Children.Add(frame);
