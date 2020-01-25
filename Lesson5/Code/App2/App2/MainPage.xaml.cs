@@ -17,16 +17,63 @@ namespace App2
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
-        public int counterLeft = 0, counterRight = 0;
-
+        public void Rename(Note note, bool right_)
+        {
+            if (right_)
+            {
+                
+                File.Move(note.Path, note.Path.Replace($"{note.Path.Split(System.IO.Path.DirectorySeparatorChar).Last()}",
+                        $"{right.Children.Count}Right.txt"));
+                note.Path = note.Path.Replace($"{note.Path.Split(System.IO.Path.DirectorySeparatorChar).Last()}",
+                        $"{right.Children.Count}Right.txt");
+            }
+            else
+            {
+                File.Move(note.Path, note.Path.Replace($"{note.Path.Split(System.IO.Path.DirectorySeparatorChar).Last()}",
+                         $"{left.Children.Count}Left.txt"));
+                note.Path = note.Path.Replace($"{note.Path.Split(System.IO.Path.DirectorySeparatorChar).Last()}",
+                        $"{left.Children.Count}Left.txt");
+            }
+            note.Right = right_;
+        }
+        public void Balance ()
+        {
+            if (left.Height > right.Height)
+            {
+                if (left.Children.Count == 0)
+                {
+                    return;
+                }
+                var frame = left.Children.Last();
+                Rename((frame as Note), true);
+                left.Children.Remove(frame);
+                right.Children.Add(frame);
+            }
+            else
+            {
+                if (right.Children.Count == 0)
+                {
+                    return;
+                }
+                var frame = right.Children.Last();
+                Rename((frame as Note), false);
+                right.Children.Remove(frame);
+                left.Children.Add(frame);
+            }
+        }
         public void add(string text, bool right_, string path)
         {
+            if (text == null)
+            {
+                return;
+            }
             int size = (text.Length >= 10) ? 10 : text.Length;
             Note frame = new Note
             {
                 BorderColor = Color.Aqua,
                 InnerText = text,
-                Path = path
+                Path = path,               
+                Right = right_
             };
             Label label = new Label();
             label.Text = text.Substring(0, size);
@@ -48,7 +95,7 @@ namespace App2
             var pan = new PanGestureRecognizer();
             double totalX = 0;
             pan.PanUpdated += async (panSender, panArgs) =>
-            {                
+            {
                 switch (panArgs.StatusType)
                 {
                     case GestureStatus.Canceled:
@@ -56,12 +103,12 @@ namespace App2
                         frame.TranslationX = 0;
                         break;
                     case GestureStatus.Completed:
-                        if ((right_ && totalX > 0) || (!right_ && totalX < 0))
+                        if (((panSender as Note).Right && totalX > 0) || (!(panSender as Note).Right && totalX < 0))
                         {
                             if (await DisplayAlert("Confirm the deleting", "Are you sure?", "Yes!", "No"))
                             {
                                 File.Delete((panSender as Note).Path);
-                                if (right_)
+                                if ((panSender as Note).Right)
                                 {
                                     right.Children.Remove(panSender as Note);
                                 } 
@@ -71,13 +118,14 @@ namespace App2
                                 }
                             }
                             totalX = 0;
+                            Balance();
                         }
                         frame.TranslationX = 0;
                         break;
                     case GestureStatus.Running:
-                        if ((right_ &&  panArgs.TotalX > 0) || (!right_ && panArgs.TotalX < 0))
+                        if (((panSender as Note).Right &&  panArgs.TotalX > 0) || (!(panSender as Note).Right && panArgs.TotalX < 0))
                         {
-                            frame.TranslationX = panArgs.TotalX;
+                            (panSender as Note).TranslationX = panArgs.TotalX;
                             totalX = panArgs.TotalX;
                         }
                         break;
@@ -96,12 +144,13 @@ namespace App2
                         frame.TranslationX = 0;
                         break;
                     case GestureStatus.Completed:
-                        if ((right_ && totalX_ > 0) || (!right_ && totalX_ < 0))
+                        if (((((panSender as Label).Parent) as Note).Right && totalX_ > 0) ||
+                            (!(((panSender as Label).Parent) as Note).Right && totalX_ < 0))
                         {
                             if (await DisplayAlert("Confirm the deleting", "Are you sure?", "Yes!", "No"))
                             {
                                 File.Delete((((panSender as Label).Parent) as Note).Path);
-                                if (right_)
+                                if ((((panSender as Label).Parent) as Note).Right)
                                 {
                                     right.Children.Remove(((panSender as Label).Parent) as Note);
                                 }
@@ -110,14 +159,16 @@ namespace App2
                                     left.Children.Remove(((panSender as Label).Parent) as Note);
                                 }
                             }
-                            totalX = 0;
+                            totalX_ = 0;
+                            Balance();
                         }
-                        frame.TranslationX = 0;
+                        (((panSender as Label).Parent) as Note).TranslationX = 0;
                         break;
                     case GestureStatus.Running:
-                        if ((right_ && panArgs.TotalX > 0) || (!right_ && panArgs.TotalX < 0))
+                        if (((((panSender as Label).Parent) as Note).Right && panArgs.TotalX > 0) ||
+                            (!(((panSender as Label).Parent) as Note).Right && panArgs.TotalX < 0))
                         {
-                            frame.TranslationX = panArgs.TotalX;
+                            (((panSender as Label).Parent) as Note).TranslationX = panArgs.TotalX;
                             totalX_ = panArgs.TotalX;
                         }
                         break;
@@ -136,30 +187,19 @@ namespace App2
         public MainPage()
         {
             InitializeComponent();
-
-            string newName = counterLeft + "Left.txt";
-            string newFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), newName);
-            while (File.Exists(newFile))
+            /*for (int i = 0; i < 100; ++i)
             {
-                string text = File.ReadAllText(newFile);
-                newName = ++counterLeft + "Left.txt";
-                newFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), newName);
-                add(text, false, newFile);
-            }
-            //counterLeft = Math.Max(0, counterLeft - 1);
-
-            
-            newName = counterRight + "Right.txt";
-            newFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), newName);
-            while (File.Exists(newFile))
+                File.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"{i}Left.txt"));
+                File.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), $"{i}Right.txt"));
+            }*/
+            foreach (var file in Directory.GetFiles(Environment.GetFolderPath(
+                Environment.SpecialFolder.LocalApplicationData), "*.txt"))
             {
-                string text = File.ReadAllText(newFile);
-                newName = ++counterRight + "Right.txt";
-                newFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), newName);
-                add(text, true, newFile);
-
+                add(File.ReadAllText(file),
+                    (file.Contains("Right.txt")) ? true : false,
+                    file);                
             }
-            //counterRight = Math.Max(0, counterRight - 1);
+            //Balance();
         }
 
         private void ToolbarItem_Clicked(object sender, EventArgs e)
@@ -183,20 +223,20 @@ namespace App2
                 string newFile;
                 if (left.Height > right.Height)
                 {
-                    newName = counterLeft++ + "Right.txt";
+                    newName = right.Children.Count + "Right.txt";
                     newFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), newName);
                     add(editor.text, true, newFile);
                 }
                 else
                 {
-                    newName = counterLeft++ + "Left.txt";
+                    newName = left.Children.Count + "Left.txt";
                     newFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), newName);
                     add(editor.text, false, newFile);
                 }
-
                 File.WriteAllText(newFile, editor.text);
             };
             Navigation.PushAsync(editor);
         }
+        public bool balance = true;       
     }
 }

@@ -32,5 +32,10 @@ namespace App2
             text = TextEditor.Text;
             Navigation.PopAsync() ;
         }
+
+        private void TextEditor_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            text = (sender as Editor).Text;
+        }
     }
 }

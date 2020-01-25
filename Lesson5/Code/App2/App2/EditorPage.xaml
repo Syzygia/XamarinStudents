@@ -10,7 +10,8 @@
             <Editor Placeholder="enter text"
                     x:Name="TextEditor"
                     VerticalOptions="FillAndExpand" 
-                    HorizontalOptions="FillAndExpand"/>
+                    HorizontalOptions="FillAndExpand"
+                    PropertyChanged="TextEditor_PropertyChanged"/>
             <Button Text="+" Margin="15" 
                     HeightRequest="80"
                     Clicked="Button_Clicked"
