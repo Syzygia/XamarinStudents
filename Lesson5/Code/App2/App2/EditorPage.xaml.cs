@@ -19,9 +19,14 @@ namespace App2
             text = null;
             TextEditor.Focus();
         }
-
+        Label label;
         public EditorPage(string x)
         {
+            label = new Label
+            {
+                Text = $"Symbols :{x.Count()}"
+            };
+            NavigationPage.SetTitleView(this, label);
             InitializeComponent();
             TextEditor.Text = x;
             text = x;
@@ -36,6 +41,10 @@ namespace App2
         private void TextEditor_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             text = (sender as Editor).Text;
+            if (text != null)
+            {
+                label.Text = $"Symbols :{text.Count()}";
+            }
         }
     }
 }
