@@ -36,9 +36,47 @@ namespace App2
             }
             note.Right = right_;
         }
+        public void BigRename()
+        {
+            int i = 0;
+            Note note;
+            foreach(var child in left.Children)
+            {
+                note = (child as Note);
+                File.Move(note.Path, note.Path.Replace($"{note.Path.Split(System.IO.Path.DirectorySeparatorChar).Last()}",
+                       $"{i}Left.txt"));
+                note.Path = note.Path.Replace($"{note.Path.Split(System.IO.Path.DirectorySeparatorChar).Last()}",
+                        $"{i}Left.txt");
+                ++i;
+            }
+            i = 0;
+            foreach (var child in right.Children)
+            {
+                note = (child as Note);
+                File.Move(note.Path, note.Path.Replace($"{note.Path.Split(System.IO.Path.DirectorySeparatorChar).Last()}",
+                       $"{i}Right.txt"));
+                note.Path = note.Path.Replace($"{note.Path.Split(System.IO.Path.DirectorySeparatorChar).Last()}",
+                        $"{i}Right.txt");
+                ++i;
+            }
+        }
         public void Balance ()
         {
-            if (left.Height > right.Height)
+            double lheight = 0;
+            foreach(var child in left.Children)
+            {
+                lheight += child.Height;
+            }
+            double rheight = 0;
+            foreach (var child in right.Children)
+            {
+                rheight += child.Height;
+            }
+            if (lheight == rheight)
+            {
+                return;
+            }
+            if (lheight > rheight)
             {
                 if (left.Children.Count == 0)
                 {
@@ -129,6 +167,7 @@ namespace App2
                                 {
                                     left.Children.Remove(panSender as Note);
                                 }
+                                BigRename();
                                 Balance();
                             }
                             totalX = 0;
@@ -171,6 +210,7 @@ namespace App2
                                 {
                                     left.Children.Remove(((panSender as Label).Parent).Parent as Note);
                                 }
+                                BigRename();
                                 Balance();
                             }
                             totalX_ = 0;

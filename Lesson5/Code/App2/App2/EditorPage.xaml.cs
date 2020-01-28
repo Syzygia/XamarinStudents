@@ -15,6 +15,11 @@ namespace App2
         public string text { private set; get; }
         public EditorPage()
         {
+            label = new Label
+            {
+                Text = $"Symbols :{0}"
+            };
+            NavigationPage.SetTitleView(this, label);
             InitializeComponent();
             text = null;
             TextEditor.Focus();
