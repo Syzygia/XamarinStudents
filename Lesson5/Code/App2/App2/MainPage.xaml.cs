@@ -98,7 +98,7 @@ namespace App2
                 right.Children.Remove(frame);
                 left.Children.Add(frame);
             }
-        }
+        }       
         public void add(string text, bool right_, string path)
         {
             if (text == null)
@@ -132,7 +132,8 @@ namespace App2
                 editor2.Disappearing += (a, b) =>
                 {
                     frame.InnerText = editor2.text;
-                    label.Text = editor2.text.Substring(0,10);
+                    int length = (editor2.text.Length > 10) ? 10 : editor2.text.Length; 
+                    label.Text = editor2.text.Substring(0,length);
                     File.WriteAllText(frame.Path, editor2.text);
                     label1.Text = File.GetLastWriteTime(path).ToString();
 
